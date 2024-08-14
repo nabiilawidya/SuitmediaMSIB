@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SuitmediaMSIB</string>
     <string name="welcome">Welcome</string>
-    <string name="username">Rohim Kurniawan</string>
+    <string name="username">John Doe</string>
     <string name="tvSelected">Selected User Name</string>
     <string name="choose">Choose a User</string>
     <string name="first_name">John</string>

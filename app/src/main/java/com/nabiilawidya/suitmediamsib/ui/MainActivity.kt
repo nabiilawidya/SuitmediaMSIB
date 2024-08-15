@@ -28,9 +28,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             val name = binding.nameInput.text.toString()
-            val intent = Intent(this, SecondActivity::class.java)
-            intent.putExtra("user_name", name)
-            startActivity(intent)
+            if (name.isNotBlank()) {
+                val intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra("user_name", name)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

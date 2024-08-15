@@ -1,6 +1,8 @@
 package com.nabiilawidya.suitmediamsib.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,8 +28,11 @@ class ThirdActivity : AppCompatActivity() {
         binding = ActivityThirdBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Third Screen"
+
         setupRecyclerView()
-        fetchUsers()
+        fetchUsers(false)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             refreshUsers()
@@ -38,74 +43,76 @@ class ThirdActivity : AppCompatActivity() {
         adapter = UserAdapter()
         adapter.setClickCallback(object : UserAdapter.OnItemClickCallback {
             override fun onItemClicked(data: DataItem) {
-                updateUserOnSecondScreen(data)
+                val intent = Intent()
+                intent.putExtra("selectedUserName", "${data.firstName} ${data.lastName}")
+                setResult(RESULT_OK, intent)
+                finish()
             }
         })
+
         binding.rvUser.layoutManager = LinearLayoutManager(this)
         binding.rvUser.adapter = adapter
-        binding.rvUser.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(1) && currentPage < totalPages) {
-                    fetchUsers()
-                }
-            }
-        })
     }
 
-    private fun fetchUsers() {
-        val parameters = hashMapOf(
-            "page" to currentPage.toString(),
-            "per_page" to "6"
-        )
-        val client = ApiConfig.getApiService().getUser(parameters)
-        client.enqueue(object : Callback<UserResponse> {
-            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                if (response.isSuccessful) {
-                    val userResponse = response.body()
-                    totalPages = userResponse?.totalPages ?: 1
-                    currentPage = userResponse?.page ?: 1
-                    val newUsers = userResponse?.data ?: emptyList()
+    private fun fetchUsers(isRefresh: Boolean = false) {
+        if (!isRefresh) {
+            binding.progressbar.visibility = View.VISIBLE
+        }
 
-                    if (newUsers.isEmpty() && currentPage == 1) {
-                        showEmptyState()
-                    } else {
-                        adapter.setList(newUsers.filterNotNull())
-                        currentPage++
+        val params = HashMap<String, String>()
+        params["page"] = currentPage.toString()
+
+        ApiConfig.getApiService().getUser(params).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                binding.progressbar.visibility = View.GONE
+                if (response.isSuccessful) {
+                    response.body()?.let { userResponse ->
+                        totalPages =
+                            userResponse.totalPages ?: 1
+                        val listUsers =
+                            userResponse.data?.filterNotNull() ?: emptyList()
+
+                        if (listUsers.isNotEmpty()) {
+                            if (isRefresh) {
+                                adapter.setList(listUsers)
+                            } else {
+                                adapter.addUsers(listUsers)
+                            }
+                        } else {
+                            showEmptyState()
+                        }
                     }
                 } else {
                     showError()
                 }
             }
-
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                binding.progressbar.visibility = View.GONE
                 showError()
             }
         })
     }
 
+
     private fun refreshUsers() {
         currentPage = 1
-        totalPages = 1
         adapter.clearUsers()
-        fetchUsers()
+        fetchUsers(true)
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
     private fun showEmptyState() {
         Toast.makeText(this, "No users found", Toast.LENGTH_SHORT).show()
         binding.rvUser.visibility = RecyclerView.GONE
-        binding.emptyState.visibility = RecyclerView.VISIBLE
+        binding.emptyState.visibility = View.VISIBLE
     }
 
     private fun showError() {
         Toast.makeText(this, "Failed to load users", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateUserOnSecondScreen(data: DataItem) {
-        val intent = intent
-        intent.putExtra("selectedUserName", "${data.firstName} ${data.lastName}")
-        setResult(RESULT_OK, intent)
-        finish()
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

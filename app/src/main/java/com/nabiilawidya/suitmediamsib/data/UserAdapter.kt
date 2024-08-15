@@ -20,6 +20,7 @@ class UserAdapter(
                 tvFirstName.text = dataItem.firstName
                 tvLastName.text = dataItem.lastName
                 tvEmailUser.text = dataItem.email
+
                 Glide.with(itemView.context)
                     .load(dataItem.avatar)
                     .circleCrop()
@@ -41,7 +42,6 @@ class UserAdapter(
 
     interface OnItemClickCallback {
         fun onItemClicked(data: DataItem)
-
     }
 
     fun setClickCallback(itemClickCallback: OnItemClickCallback) {
@@ -49,7 +49,7 @@ class UserAdapter(
     }
 
     fun clearUsers() {
-        this.users.clear()
+        users.clear()
         notifyDataSetChanged()
     }
 
@@ -57,5 +57,11 @@ class UserAdapter(
         users.clear()
         users.addAll(newUsers)
         notifyDataSetChanged()
+    }
+
+    fun addUsers(newUsers: List<DataItem>) {
+        val startPosition = users.size
+        users.addAll(newUsers)
+        notifyItemRangeInserted(startPosition, newUsers.size)
     }
 }

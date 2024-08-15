@@ -15,6 +15,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "\"https://reqres.in/\"" )
     }
 
     buildTypes {
@@ -35,6 +36,7 @@ android {
     }
     buildFeatures{
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -55,5 +57,5 @@ dependencies {
     implementation (libs.circleImageView)
     implementation (libs.lifecycleLivedata)
     implementation (libs.lifecycleViewModel)
-
+    implementation(libs.androidx.swiperefreshlayout)
 }

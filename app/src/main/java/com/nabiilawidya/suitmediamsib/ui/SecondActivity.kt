@@ -1,21 +1,36 @@
 package com.nabiilawidya.suitmediamsib.ui
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.nabiilawidya.suitmediamsib.R
+import com.nabiilawidya.suitmediamsib.databinding.ActivitySecondBinding
 
 class SecondActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySecondBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_second)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        binding = ActivitySecondBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val userName = intent.getStringExtra("user_name")
+        binding.tvUsername.text = userName
+
+        binding.btnChoseUser.setOnClickListener {
+            val intent = Intent(this, ThirdActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            val selectedUserName = data?.getStringExtra("selectedUserName")
+            binding.tvUsername.text = selectedUserName
+        }
+    }
+
+    companion object {
+        const val REQUEST_CODE = 1
     }
 }

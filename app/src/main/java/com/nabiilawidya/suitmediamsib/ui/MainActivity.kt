@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         binding.nextButton.setOnClickListener {
             val name = binding.nameInput.text.toString()
             val intent = Intent(this, SecondActivity::class.java)
-            intent.putExtra("name", name)
+            intent.putExtra("user_name", name)
             startActivity(intent)
         }
     }

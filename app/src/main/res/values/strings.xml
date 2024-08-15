@@ -6,5 +6,5 @@
     <string name="choose">Choose a User</string>
     <string name="first_name">John</string>
     <string name="last_name">Doe</string>
-
+    <string name="email">johndoe@gmail.com</string>
 </resources>

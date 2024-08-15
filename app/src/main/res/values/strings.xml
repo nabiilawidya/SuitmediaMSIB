@@ -7,4 +7,9 @@
     <string name="first_name">John</string>
     <string name="last_name">Doe</string>
     <string name="email">johndoe@gmail.com</string>
+    <string name="name">Name</string>
+    <string name="palindrome">Palindrome</string>
+    <string name="check">CHECK</string>
+    <string name="next">NEXT</string>
+    <string name="no_users_available">No users available</string>
 </resources>
